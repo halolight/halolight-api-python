@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  # PostgreSQL database
+  postgres:
+    image: postgres:16-alpine
+    container_name: halolight-postgres
+    environment:
+      POSTGRES_USER: halolight
+      POSTGRES_PASSWORD: halolight
+      POSTGRES_DB: halolight
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U halolight"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - halolight-network
+
+  # FastAPI application
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: halolight-api
+    environment:
+      DATABASE_URL: postgresql://halolight:halolight@postgres:5432/halolight
+      JWT_SECRET_KEY: your-secret-key-change-this-in-production-min-32-chars
+      JWT_REFRESH_SECRET_KEY: your-refresh-secret-key-change-in-production
+      DEBUG: "true"
+      ENVIRONMENT: development
+      API_PREFIX: /api
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./app:/app/app
+      - ./alembic:/app/alembic
+    command: sh -c "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
+    networks:
+      - halolight-network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  halolight-network:
+    driver: bridge
