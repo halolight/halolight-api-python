@@ -92,7 +92,7 @@ uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 4
 
 The API will be available at:
 - API: http://localhost:8000
-- Swagger UI: http://localhost:8000/api/docs
+- Swagger UI: http://localhost:8000/docs
 - ReDoc: http://localhost:8000/api/redoc
 
 ## Docker Deployment
@@ -345,6 +345,10 @@ This API follows a layered architecture:
 - [halolight-vue](https://github.com/halolight/halolight-vue) - Vue 3 reference implementation
 - [halolight-api-node](https://github.com/halolight/halolight-api-node) - Node.js/Express API
 - [docs](https://github.com/halolight/docs) - Documentation and specifications
+
+## Documentation
+
+📚 Complete Documentation: https://halolight.docs.h7ml.cn/
 
 ## License
 
